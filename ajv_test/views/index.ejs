@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <h1>Validación de JSON con Postman</h1>
+
+    <p>Esta guía  muestra cómo comprobar si tu API valida correctamente los JSON usando Postman.</p>
+  
+    <hr />
+  
+    <h2>1. Inicia tu servidor</h2>
+    <ol>
+      <li>Abre tu proyecto en la terminal.</li>
+      <li>Ejecuta <code>npm start</code></li>
+      <li>la aplicación esta corriendo en <code>http://localhost:3000</code>.</li>
+    </ol>
+  
+    <hr />
+  
+    <h2>2. Abre Postman y configura la petición</h2>
+    <ol>
+      <li>En Postman, crea una nueva pestaña o request.</li>
+      <li>Cambia el método HTTP a <strong>POST</strong>.</li>
+      <li>Introduce la URL, por ejemplo <code>http://localhost:3000/users</code> o <code>http://localhost:3000/product</code>, según la ruta que quieras probar.</li>
+      <li>En la sección <strong>Body</strong>, selecciona <strong>raw</strong> y, en el menú desplegable de la derecha, elige <strong>JSON</strong>.</li>
+      <li>Escribe o pega tu JSON en el área de texto.</li>
+    </ol>
+  
+    <hr />
+  
+    <h2>3. Ejemplo de validación para <code>/users</code></h2>
+    <p>Esquema de <strong>usuario</strong> (requiere <code>name</code> y <code>age</code> de tipo <code>string</code> y <code>number</code> respectivamente).</p>
+    <h3>JSON válido</h3>
+    <pre>
+  {
+    "name": "Alice",
+    "age": 30
+  }
+    </pre>
+    <ul>
+      <li>En Postman, envía este JSON a <code>POST http://localhost:3000/users</code>.</li>
+      <li>Deberías recibir una respuesta con <code>status 200</code> y un mensaje como <code>"JSON de usuario válido"</code>.</li>
+    </ul>
+  
+    <h3>JSON inválido</h3>
+    <pre>
+  {
+    "name": "Alice"
+  }
+    </pre>
+    <ul>
+      <li>Aquí falta la propiedad <code>age</code>.</li>
+      <li>Si lo envías a <code>POST http://localhost:3000/users</code>, obtendrás <code>status 400</code> y un mensaje indicando que el JSON no es válido.</li>
+    </ul>
+  
+    <hr />
+  
+    <h2>4. Ejemplo de validación para <code>/product</code></h2>
+    <p>Esquema de <strong>producto</strong> (requiere <code>title</code> de tipo <code>string</code> y <code>price</code> de tipo <code>number</code>).</p>
+    <h3>JSON válido</h3>
+    <pre>
+  {
+    "title": "Laptop",
+    "price": 999.99
+  }
+    </pre>
+    <ul>
+      <li>En Postman, envía este JSON a <code>POST http://localhost:3000/product</code>.</li>
+      <li>Deberías recibir una respuesta con <code>status 200</code> y un mensaje como <code>"JSON de producto válido"</code>.</li>
+    </ul>
+  
+    <h3>JSON inválido</h3>
+    <pre>
+  {
+    "title": "Laptop",
+    "price": "mil pesos"
+  }
+    </pre>
+    <ul>
+      <li>Aquí <code>price</code> es una cadena en lugar de un número.</li>
+      <li>Si lo envías a <code>POST http://localhost:3000/product</code>, obtendrás <code>status 400</code> y un mensaje indicando el error de validación.</li>
+    </ul>
+  
+    <hr />
+  
+    <h2>5. Por último, comprueba el código de estado obtenido en cada ruta  </h2>
+    
+  
+    
+  </body>
+</html>
