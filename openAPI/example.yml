@@ -1,0 +1,339 @@
+openapi: 3.0.3
+info:
+  description: |-
+    My Card Game documentation
+  version: 1.0.0
+  title: Card Game
+tags:
+  - name: card
+    description: Everything about the Card Game
+paths:
+  /card:
+    get:
+      summary: GET all cards
+      description: GET all cards
+      responses:
+        "200":
+          description: "OK"
+          content:
+             application/json:
+              schema: 
+                $ref: '#/components/schemas/Cards'
+    post:
+      tags:
+        - card
+      summary: Add a new card to the game
+      description: Add a new card to the game
+      operationId: addCard
+      requestBody:
+        description: Add a new card to the game
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Card'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '405':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      
+  /card/{cardId}:
+    parameters:
+      - $ref: '#/components/parameters/ID'
+    get:
+      tags:
+        - card
+      summary: Find card by ID
+      description: Returns a single card
+      operationId: getCardById
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Card'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '4XX':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - card
+      summary: Deletes a card
+      description: ''
+      operationId: deleteCard
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid card ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /card/cards:
+    get:
+      summary: Get cards with optional filters
+      description: Returns cards, optionally filtered by type and paginated
+      parameters:
+        - name: type
+          in: query
+          required: false
+          description: Filter by card type
+          schema:
+            type: string
+            enum: ["hero", "event", "ally"]
+        - name: limit
+          in: query
+          required: false
+          description: Number of cards to return (max 100)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          required: false
+          description: Number of cards to skip from the beginning
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Card"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /deck:
+    post:
+      tags:
+        - deck
+      summary: Add a new deck to the game
+      description: Add a new deck to the game
+      operationId: addDeck
+      requestBody:
+        description: Add a new deck to the game
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Deck'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '405':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  parameters:
+    ID:
+      description: Card ID
+      name: cardId
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/ID"
+  schemas:
+    Cards:
+      type: object
+      properties:
+        results:
+          $ref: "#/components/schemas/CardsArray"
+        next:
+          type: string
+          description: Card next ID for pagination search
+      required:
+        - results
+        - next
+    CardsArray:
+      type: array
+      items:
+        $ref: "#/components/schemas/CardMin"
+    CardMin:
+      type: object
+      properties:
+        _id:
+          $ref: "#/components/schemas/ID"
+        name:
+          type: string
+          description: Card name
+        type:
+          $ref: "#/components/schemas/Type"
+      required:
+        - _id
+        - name
+        - type
+    Card:
+      type: object
+      properties:
+        _id:
+          $ref: "#/components/schemas/ID"
+        name:
+          type: string
+          example: Spider-Man
+        text:
+          type: string
+          example: Spider-Sense Interrupt When the villain initiates an attack against you, draw one card.
+        cost:
+          type: integer
+          example: 2
+        is_unique:
+          type: boolean
+          example: true
+        traits:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            $ref: "#/components/schemas/TraitsItems"
+        type:
+          $ref: "#/components/schemas/Type"
+        health:
+          type: integer
+          example: 2
+        thwart:
+          type: integer
+          example: 1
+        attack:
+          type: integer
+          example: 1
+        defense:
+          type: integer
+          example: 3
+        hand_size:
+          type: integer
+          example: 5 
+      required:
+        - _id
+        - name
+        - text
+        - is_unique
+        - traits
+        - type
+          
+          
+          
+    Deck:
+      type: object
+      required:
+        - name
+        - description
+        - hero
+        - cards
+      properties:
+        name:
+          type: string
+          example: "Spider-Man Rocks"
+        description:
+          type: string
+          example: "The description!"
+        hero:
+          $ref: "#/components/schemas/ID"
+        cards: 
+          $ref: "#/components/schemas/DeckCards"
+      example:
+        name: Spider-Man Rocks
+        description: The description!
+        hero: "01001"
+        cards:
+          01002: 1
+          01084: 1
+          01071: 2
+          01005: 3
+          
+    DeckCards:
+      type: object
+      properties:
+        01002:
+          type: integer
+          example: 1
+        01084: 
+          type: integer
+          example: 1
+        01071: 
+          type: integer
+          example: 2
+        01005: 
+          type: integer
+          example: 3
+        
+        
+        
+        
+        
+        
+          
+    TraitsItems:
+      type: string
+      enum: ['Aerial',
+            'Attack',
+            'Avenger',
+            'Defense',
+            'Hero for Hire',
+            'S.H.I.E.L.D.',
+            'Skill',
+            'Spy',
+            'Superpower',
+            'Wakanda']
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 1
+        message:
+          $ref: "#/components/schemas/ErrorMessage"
+          
+    ErrorMessage:
+      type : string
+      enum: ["Invalid input", "id ID supplied", "Card not found", "Invalid card ID" ]
+        
+          
+    Type:
+      type: string
+      enum: ["hero", "ally", "event"]
+      description: Card type
+    ID:
+      type: string
+      description: Card ID obtained from the database
+      example: 01001
+servers:
+  - url: localhost:3000/api/
